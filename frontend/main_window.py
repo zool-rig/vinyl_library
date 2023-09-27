@@ -422,7 +422,6 @@ class VinylLibraryUI(QDialog):
 
 if __name__ == "__main__":
     import sys
-
     app = QApplication([])
     ui = VinylLibraryUI()
     ui.show()

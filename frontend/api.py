@@ -1,3 +1,4 @@
+import os
 import os.path
 import webbrowser
 from typing import List, Optional, Tuple
@@ -10,7 +11,7 @@ from PySide6.QtGui import QImage
 
 
 class VinylLibraryAPI(object):
-    API_URL: str = "http://127.0.0.1:8000/vinyl_library"
+    API_URL: str = f"http://{os.environ.get('VINYL_LIBRARY_ADDRESS', '127.0.0.1:8000')}/vinyl_library"
 
     def __init__(self):
         self._artists: Optional[list] = None
