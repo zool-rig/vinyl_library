@@ -1,0 +1,1 @@
+from frontend.dialogs.edit_vinyl_dialog import EditVinylDialog

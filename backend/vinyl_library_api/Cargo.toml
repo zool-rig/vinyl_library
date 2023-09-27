@@ -1,0 +1,12 @@
+[package]
+name = "vinyl_library_api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
+mysql = "24.0.0"
+chrono = "0.4.23"
+serde = "1.0.188"
