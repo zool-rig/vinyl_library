@@ -8,8 +8,8 @@ from frontend.dialogs.select_cover_file_dialog import CoverSelectorDialog
 
 
 class EditVinylDialog(QDialog):
-    def __init__(self, api, cover_file_name="no_image.jpg", vinyl_name="", artist_name=""):
-        super().__init__()
+    def __init__(self, parent, api, cover_file_name="no_image.jpg", vinyl_name="", artist_name=""):
+        super().__init__(parent=parent)
         self.api = api
         self.ok = False
         self._cover_file_name = cover_file_name
@@ -50,7 +50,7 @@ class EditVinylDialog(QDialog):
 
     def init_widgets(self):
         self.image_btn = QToolButton()
-        self.vinyl_lbl = QLabel("Vinyl name :")
+        self.vinyl_lbl = QLabel("Vinyl name : ")
         self.vinyl_edt = QLineEdit()
         self.artist_lbl = QLabel("Artist name :")
         self.artist_edt = QLineEdit()
@@ -91,6 +91,7 @@ class EditVinylDialog(QDialog):
             layout.setAlignment(alignment)
         self.image_btn.setMinimumSize(150, 150)
         self.image_btn.setIconSize(QSize(150, 150))
+        self.image_btn.setObjectName("CoverButton")
         self.cover_file_name = self._cover_file_name
         self.vinyl_name = self._vinyl_name
         self.artist_name = self._artist_name

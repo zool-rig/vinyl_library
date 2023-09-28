@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 import time
 from functools import partial
@@ -114,7 +115,9 @@ class VinylLibraryUI(QDialog):
         self.main_h_layout.addLayout(self.vinyls_v_layout)
         self.vinyls_v_layout.addLayout(self.header_h_layout)
         self.header_h_layout.addWidget(self.vinyl_count_lbl)
+        self.header_h_layout.addStretch()
         self.header_h_layout.addWidget(self.vinyl_search_bar)
+        self.header_h_layout.addStretch()
         self.header_h_layout.addWidget(self.sorting_cbx)
         self.header_h_layout.addWidget(self.display_mosaic_btn)
         self.header_h_layout.addWidget(self.display_list_btn)
@@ -163,7 +166,9 @@ class VinylLibraryUI(QDialog):
         self.artists_list.setSelectionMode(QListWidget.ExtendedSelection)
         self.artists_list.setMinimumWidth(200)
         self.artists_list.installEventFilter(self)
-        self.vinyl_search_bar.setPlaceholderText("Search vinyls")
+        self.vinyl_search_bar.setPlaceholderText("🔍\tSearch vinyls")
+        self.vinyl_search_bar.setObjectName("SearchBar")
+        self.vinyl_search_bar.setMinimumWidth(350)
         self.update_vinyls_count()
         self.vinyl_count_lbl.setFont(
             QFont("Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1", 18)
@@ -274,7 +279,7 @@ class VinylLibraryUI(QDialog):
         self.filter_vinyls()
 
     def add_vinyl(self):
-        dialog = EditVinylDialog(self.api)
+        dialog = EditVinylDialog(self, self.api)
         ok, vinyl_data = dialog.exec()
         if not ok:
             return
@@ -328,7 +333,7 @@ class VinylLibraryUI(QDialog):
             "cover_file_name": widget.vinyl.cover_file_name,
             "vinyl_name": widget.vinyl.name,
         }
-        dialog = EditVinylDialog(self.api, **current_data)
+        dialog = EditVinylDialog(self, self.api, **current_data)
         ok, vinyl_data = dialog.exec()
         if not ok or vinyl_data == current_data:
             return
@@ -414,10 +419,26 @@ class VinylLibraryUI(QDialog):
         menu = QMenu()
         rename_action = menu.addAction("Rename")
         rename_action.setIcon(make_icon("edit.png"))
+        rename_action.triggered.connect(lambda: self.rename_artist(selected_item))
         delete_action = menu.addAction("Delete")
         delete_action.setIcon(make_icon("delete.png"))
         delete_action.triggered.connect(lambda: self.delete_artist_with_prompt(selected_item.artist))
         menu.exec(pos)
+
+    def rename_artist(self, item):
+        user_input = QInputDialog.getText(self, "Rename artist", "New name :")
+        if not all(user_input):
+            return
+
+        new_name, _ = user_input
+        item.artist = self.api.update_artist(item.artist, new_name)
+        item.setText(item.artist.pretty_name)
+
+        related_vinyls_ids = {vinyl.id for vinyl in self.api.get_vinyls_for_artist(item.artist)}
+        for widget in self.vinyl_widgets:
+            if widget.vinyl.id in related_vinyls_ids:
+                widget.vinyl.artist_name = item.artist.name
+                widget.artist_lbl.setText(item.artist.pretty_name)
 
 
 if __name__ == "__main__":
@@ -425,4 +446,7 @@ if __name__ == "__main__":
     app = QApplication([])
     ui = VinylLibraryUI()
     ui.show()
+    style_file = r"C:\python_projects\vinyl_library\frontend\resources\style\style.qss"
+    with open(style_file, "r") as f:
+        ui.setStyleSheet(f.read())
     sys.exit(app.exec())

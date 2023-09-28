@@ -105,6 +105,7 @@ class CoverSelectorDialog(QDialog):
             setattr(button, "image", image)
             self.flow_layout.addWidget(button)
             self.image_buttons.append(button)
+            button.setObjectName("CoverButton")
 
     def upload(self):
         image_path, _ = QFileDialog.getOpenFileName(

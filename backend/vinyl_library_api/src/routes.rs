@@ -114,12 +114,40 @@ pub fn delete_artist(id: u32) {
     let mut conn =
         connect().expect("Failed to establish connection with the 'vinyl_library' database");
 
+    let (mut conn, existing_artist_id) = check_artist_by_id(conn, &id);
+    if existing_artist_id.is_none() {
+        panic!("{} is not a valid artist id", &id);
+    }
+
     let stmt = conn
         .prep("DELETE FROM `vinyl_library`.`artists` WHERE (`id` = :id);")
         .expect("Failed to prepare statement");
 
     conn.exec::<bool, _, _>(stmt, params! { "id" => id})
         .expect("Failed to delete artist");
+}
+
+#[post("/artists/update?<id>", data = "<new_name>")]
+pub fn update_artist(id: u32, new_name: String) -> Json<Artist> {
+    let mut conn =
+        connect().expect("Failed to establish connection with the 'vinyl_library' database");
+
+    let (mut conn, existing_artist_id) = check_artist_by_id(conn, &id);
+    if existing_artist_id.is_none() {
+        panic!("{} is not a valid artist id", &id);
+    }
+
+    let stmt = conn
+        .prep("UPDATE vinyl_library.artists SET name = :name WHERE id = :id;")
+        .expect("Failed to prepare statement");
+
+    conn.exec::<bool, _, _>(
+        stmt,
+        params! { "name" => &new_name, "id" => id },
+    )
+    .expect("Failed to update vinyl");
+
+    Json(Artist{ id, name:new_name })
 }
 
 // [VINYLS] ========================================================================================
@@ -275,13 +303,13 @@ pub fn update_vinyl(id: u32, data: Json<VinylUserData>) -> Json<Vinyl> {
 
     let stmt = conn
         .prep(
-            r#"UPDATE `vinyl_library`.`vinyls`
+            r#"UPDATE vinyl_library.vinyls
             SET
-                `name` = :name,
-                `artist_id` = :artist_id,
-                `cover_file_name` = :cover_file_name
+                name = :name,
+                artist_id = :artist_id,
+                cover_file_name = :cover_file_name
             WHERE
-                (`id` = :id);"#,
+                (id = :id);"#,
         )
         .expect("Failed to prepare statement");
 

@@ -50,7 +50,7 @@ class AbstractVinylWidget(QWidget):
         self.image_icon.setGraphicsEffect(None)
 
     def show_cover(self):
-        dialog = QDialog()
+        dialog = QDialog(self.parent())
         dialog.setWindowTitle(f"{self.vinyl.pretty_name} - {self.vinyl.artist_pretty_name}")
         layout = QVBoxLayout(dialog)
         pixmap = QPixmap(self.image)
@@ -61,7 +61,7 @@ class AbstractVinylWidget(QWidget):
         dialog.exec()
 
     def show_context_menu(self, pos):
-        menu = QMenu()
+        menu = QMenu(self.parent())
         edit_action = menu.addAction("Edit")
         edit_action.setIcon(make_icon("edit.png"))
         edit_action.triggered.connect(lambda: self.edit_requested.emit(self))

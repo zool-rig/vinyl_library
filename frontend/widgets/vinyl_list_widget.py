@@ -17,4 +17,7 @@ class VinylListWidget(AbstractVinylWidget):
         self.layout.addStretch()
         self.layout.addWidget(self.artist_lbl)
         self.layout.addStretch()
+        self.layout.addStretch()
+        self.layout.addStretch()
+        self.layout.addStretch()
 

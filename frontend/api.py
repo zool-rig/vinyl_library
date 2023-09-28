@@ -67,6 +67,13 @@ class VinylLibraryAPI(object):
         if not response.ok:
             response.raise_for_status()
 
+    def update_artist(self, artist: Artist, new_name: str) -> Artist:
+        url = f"{self.API_URL}/artists/update?id={artist.id}"
+        response = requests.post(url, data=new_name)
+        if not response.ok:
+            response.raise_for_status()
+        return Artist.from_json(response.json())
+
     # [Vinyls] =========================================================================================================
 
     def get_vinyls(self) -> List[Vinyl]:
