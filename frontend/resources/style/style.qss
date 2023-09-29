@@ -166,3 +166,14 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 QFrame#Splitter {
     color: #676e75;
 }
+
+QSpinBox {
+    border-radius: 4px;
+    background-color: #6a747d;
+    border: 1px solid darkgrey;
+    padding: 4px;
+}
+
+QSpinBox::up-button, QSpinBox::down-button {
+    border: none;
+}

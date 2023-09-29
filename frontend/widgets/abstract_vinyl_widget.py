@@ -19,7 +19,7 @@ class AbstractVinylWidget(QWidget):
         self.image_icon = None
         self.name_lbl = None
         self.artist_lbl = None
-        self.image_is_loaded = False
+        self.is_loaded = False
         self.image_average_color = QColor()
         self.image = None
         self.setMinimumSize(*self.MINIMUM_SIZE)
@@ -34,20 +34,22 @@ class AbstractVinylWidget(QWidget):
         pixmap = QPixmap(image)
         pixmap = pixmap.scaled(QSize(*self.IMAGE_SIZE), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.image_icon.setPixmap(pixmap)
-        self.image_is_loaded = True
+        self.is_loaded = True
         self.image_average_color = QColor(*get_image_average_pixel_color(image))
         self.image = image
 
     def enterEvent(self, event):
-        shadow_effect = QGraphicsDropShadowEffect(self)
-        shadow_effect.setBlurRadius(20)
-        shadow_effect.setXOffset(0)
-        shadow_effect.setYOffset(0)
-        shadow_effect.setColor(self.image_average_color)
-        self.image_icon.setGraphicsEffect(shadow_effect)
+        if self.is_loaded:
+            shadow_effect = QGraphicsDropShadowEffect(self)
+            shadow_effect.setBlurRadius(20)
+            shadow_effect.setXOffset(0)
+            shadow_effect.setYOffset(0)
+            shadow_effect.setColor(self.image_average_color)
+            self.image_icon.setGraphicsEffect(shadow_effect)
 
     def leaveEvent(self, event):
-        self.image_icon.setGraphicsEffect(None)
+        if self.is_loaded:
+            self.image_icon.setGraphicsEffect(None)
 
     def show_cover(self):
         dialog = QDialog(self.parent())
@@ -92,4 +94,4 @@ class AbstractVinylWidget(QWidget):
         self.load_image(image)
         self.name_lbl.setText(self.vinyl.pretty_name)
         self.artist_lbl.setText(self.vinyl.artist_pretty_name)
-        self.image_is_loaded = True
+        self.is_loaded = True

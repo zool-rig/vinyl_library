@@ -8,7 +8,7 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
 from frontend.api import VinylLibraryAPI, Artist
-from frontend.dialogs import EditVinylDialog
+from frontend.dialogs import EditVinylDialog, ShuffleVinylsDialog
 from frontend.lib.utils import make_tool_button, make_icon
 from frontend.widgets import *
 
@@ -132,6 +132,7 @@ class VinylLibraryUI(QDialog):
         self.add_vinyl_btn.clicked.connect(self.add_vinyl)
         self.toggle_artists_btn.toggled.connect(self.toggle_artists_widgets)
         self.artists_list.itemSelectionChanged.connect(self.set_artist_filter)
+        self.shuffle_btn.clicked.connect(self.shuffle_vinyls)
         self.vinyl_search_bar.textChanged.connect(self.set_vinyl_filter)
         self.sorting_cbx.currentIndexChanged.connect(self.set_sorting_mode)
         self.display_mosaic_btn.clicked.connect(
@@ -150,6 +151,7 @@ class VinylLibraryUI(QDialog):
 
     def set_default(self):
         self.setWindowTitle("Vinyl Library")
+        self.setWindowFlags(self.windowFlags() | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
         for layout, alignment in (
             (self.toolbar_v_layout, Qt.AlignTop),
             (self.artists_v_layout, Qt.AlignTop),
@@ -316,7 +318,7 @@ class VinylLibraryUI(QDialog):
         viewport_geo = self.scroll_area.viewport().geometry()
         scroll_value = self.scroll_area.verticalScrollBar().value()
         for widget in self.vinyl_widgets:
-            if widget.image_is_loaded:
+            if widget.is_loaded:
                 continue
             widget_geometry = widget.geometry()
             widget_geometry.translate(0, -scroll_value)
@@ -439,6 +441,9 @@ class VinylLibraryUI(QDialog):
             if widget.vinyl.id in related_vinyls_ids:
                 widget.vinyl.artist_name = item.artist.name
                 widget.artist_lbl.setText(item.artist.pretty_name)
+
+    def shuffle_vinyls(self):
+        ShuffleVinylsDialog(self).exec()
 
 
 if __name__ == "__main__":

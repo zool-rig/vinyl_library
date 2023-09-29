@@ -25,6 +25,7 @@ fn rocket() -> Rocket<Build> {
             routes::upload_image,
             routes::get_image_names,
             routes::update_artist,
+            routes::shuffle_vinyls,
         ],
     )
 }

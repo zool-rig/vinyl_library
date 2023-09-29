@@ -8,16 +8,13 @@ class VinylListWidget(AbstractVinylWidget):
     IMAGE_SIZE = (50, 50)
     MINIMUM_SIZE = (50, 80)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def load(self, image):
         super().load(image)
         self.layout = QHBoxLayout(self)
-        self.layout.setAlignment(Qt.AlignLeft)
         self.layout.addWidget(self.image_icon)
         self.layout.addWidget(self.name_lbl)
-        self.layout.addStretch()
+        self.name_lbl.setFont(QFont("Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1", 14))
         self.layout.addWidget(self.artist_lbl)
-        self.layout.addStretch()
-        self.layout.addStretch()
-        self.layout.addStretch()
-        self.layout.addStretch()
-

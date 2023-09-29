@@ -85,7 +85,7 @@ class CoverSelectorDialog(QDialog):
         return self.ok, self.selected_image
 
     def showEvent(self, arg__1):
-        self.resize(400, 500)
+        self.setGeometry(self.pos().x() - 200, self.pos().y() - 250, 400, 500)
 
     def existing_image_selected(self, button):
         state = button.isChecked()

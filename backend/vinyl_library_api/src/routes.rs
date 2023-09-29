@@ -141,13 +141,10 @@ pub fn update_artist(id: u32, new_name: String) -> Json<Artist> {
         .prep("UPDATE vinyl_library.artists SET name = :name WHERE id = :id;")
         .expect("Failed to prepare statement");
 
-    conn.exec::<bool, _, _>(
-        stmt,
-        params! { "name" => &new_name, "id" => id },
-    )
-    .expect("Failed to update vinyl");
+    conn.exec::<bool, _, _>(stmt, params! { "name" => &new_name, "id" => id })
+        .expect("Failed to update vinyl");
 
-    Json(Artist{ id, name:new_name })
+    Json(Artist { id, name: new_name })
 }
 
 // [VINYLS] ========================================================================================
@@ -345,6 +342,40 @@ pub fn delete_vinyl(id: u32) {
 
     conn.exec::<bool, _, _>(stmt, params! { "id" => id})
         .expect("Failed to delete vinyl");
+}
+
+#[get("/vinyls/shuffle?<count>")]
+pub fn shuffle_vinyls(count: u32) -> Json<Vec<Vinyl>> {
+    let mut conn =
+        connect().expect("Failed to establish connection with the 'vinyl_library' database");
+    // SELECT * FROM vinyl_library.vinyls ORDER BY RAND() LIMIT 33;
+    return Json(
+        conn.query_map(
+            format!(
+                r#"SELECT
+                    vinyls.id,
+                    vinyls.name,
+                    vinyls.artist_id,
+                    artists.name AS artist_name,
+                    vinyls.added_date,
+                    vinyls.cover_file_name
+                FROM vinyls
+                LEFT JOIN artists ON vinyls.artist_id = artists.id
+                ORDER BY RAND()
+                LIMIT {};"#,
+                count
+            ),
+            |mut row: mysql::Row| Vinyl {
+                id: row.take("id").unwrap(),
+                name: row.take("name").unwrap(),
+                artist_id: row.take("artist_id").unwrap(),
+                artist_name: row.take("artist_name").unwrap(),
+                added_date: row.take("added_date").unwrap(),
+                cover_file_name: row.get("cover_file_name").unwrap(),
+            },
+        )
+        .expect("Faild to query random vinyls list"),
+    );
 }
 
 // [IMAGES] ========================================================================================

@@ -165,6 +165,13 @@ class VinylLibraryAPI(object):
             response.raise_for_status()
         self.vinyls.remove(vinyl)
 
+    def shuffle_vinyls(self, count: int) -> List[Vinyl]:
+        url = f"{self.API_URL}/vinyls/shuffle?count={count}"
+        response = requests.get(url)
+        if not response.ok:
+            response.raise_for_status()
+        return [Vinyl.from_json(data) for data in response.json()]
+
     # [Vinyls] =========================================================================================================
 
     def get_image(self, image_name: str) -> QImage:
@@ -202,11 +209,3 @@ class VinylLibraryAPI(object):
             response.raise_for_status()
 
         return self.get_image(image_name)
-
-
-# if __name__ == '__main__':
-#     url = f"{VinylLibraryAPI.API_URL}/images/upload/test.jpg"
-#     # with open(r"E:\Images\51752083-39649770.jpg", "rb") as f:
-#     response = requests.post(url, data=open(r"E:\Images\gigantosaurus.jpg", "rb").read())
-#     if not response.ok:
-#         response.raise_for_status()
