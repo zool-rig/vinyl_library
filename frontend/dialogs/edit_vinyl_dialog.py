@@ -1,10 +1,19 @@
-import os
-import shutil
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from frontend.widgets import HSplitter
+# -*- coding: utf-8 -*-
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QToolButton,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QCompleter
+)
+
 from frontend.dialogs.select_cover_file_dialog import CoverSelectorDialog
+from frontend.widgets import HSplitter
 
 
 class EditVinylDialog(QDialog):

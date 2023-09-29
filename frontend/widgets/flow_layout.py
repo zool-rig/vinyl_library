@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PySide6.QtWidgets import QLayout, QSizePolicy
 from PySide6.QtCore import QMargins, Qt, QRect, QSize, QPoint
 

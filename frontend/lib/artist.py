@@ -1,4 +1,4 @@
-import json
+# -*- coding: utf-8 -*-
 from dataclasses import dataclass
 
 

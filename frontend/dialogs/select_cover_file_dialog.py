@@ -1,9 +1,20 @@
+# -*- coding: utf-8 -*-
 import os
 from functools import partial
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QPushButton,
+    QLabel,
+    QScrollArea,
+    QWidget,
+    QToolButton,
+    QFileDialog
+)
 
 from frontend.widgets import FlowLayout
 from frontend.widgets import HSplitter

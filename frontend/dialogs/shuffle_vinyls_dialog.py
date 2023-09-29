@@ -1,6 +1,16 @@
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+# -*- coding: utf-8 -*-
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QSpinBox,
+    QPushButton,
+    QScrollArea,
+    QWidget,
+)
+
 from frontend.widgets import HSplitter, VinylListWidget
 
 
@@ -56,7 +66,9 @@ class ShuffleVinylsDialog(QDialog):
         self.shuffle_btn.clicked.connect(self.shuffle)
 
     def set_default(self):
+        self.setWindowTitle("Shuffle Vinyls")
         self.main_v_layout.setAlignment(Qt.AlignTop)
+        self.count_h_layout.setAlignment(Qt.AlignCenter)
         self.scroll_area_v_layout.setAlignment(Qt.AlignTop)
         self.count_spn.setRange(1, (32 ** 2) - 1)
         self.count_spn.setValue(self.DEFAULT_COUNT)
@@ -67,7 +79,7 @@ class ShuffleVinylsDialog(QDialog):
         super().exec()
 
     def showEvent(self, arg__1):
-        self.setGeometry(self.pos().x() - 200, self.pos().y() - 300, 400, 600)
+        self.setGeometry(self.pos().x() - 300, self.pos().y() - 400, 600, 800)
 
     def clear(self):
         for widget in self.vinyl_widgets:

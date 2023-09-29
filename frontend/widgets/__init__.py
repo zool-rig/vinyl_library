@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from frontend.widgets.splitters import HSplitter, VSplitter
 from frontend.widgets.flow_layout import FlowLayout
 from frontend.widgets.vinyl_mosaic_widget import VinylMosaicWidget

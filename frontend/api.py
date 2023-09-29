@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import os.path
 import webbrowser
@@ -172,7 +173,7 @@ class VinylLibraryAPI(object):
             response.raise_for_status()
         return [Vinyl.from_json(data) for data in response.json()]
 
-    # [Vinyls] =========================================================================================================
+    # [IMAGES] =========================================================================================================
 
     def get_image(self, image_name: str) -> QImage:
         loaded_image = self._images.get(image_name)

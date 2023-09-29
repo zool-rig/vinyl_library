@@ -3,14 +3,29 @@ import re
 import time
 from functools import partial
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PySide6.QtCore import Qt, QEvent, QTimer
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QVBoxLayout,
+    QLabel,
+    QListWidget,
+    QLineEdit,
+    QComboBox,
+    QScrollArea,
+    QWidget,
+    QListWidgetItem,
+    QSizePolicy,
+    QMessageBox,
+    QMenu,
+    QInputDialog,
+)
 
 from frontend.api import VinylLibraryAPI, Artist
 from frontend.dialogs import EditVinylDialog, ShuffleVinylsDialog
 from frontend.lib.utils import make_tool_button, make_icon
-from frontend.widgets import *
+from frontend.widgets import FlowLayout, VSplitter, HSplitter, VinylMosaicWidget, VinylListWidget
 
 
 class VinylLibraryUI(QDialog):
@@ -166,7 +181,7 @@ class VinylLibraryUI(QDialog):
             QSizePolicy.Maximum, QSizePolicy.MinimumExpanding
         )
         self.artists_list.setSelectionMode(QListWidget.ExtendedSelection)
-        self.artists_list.setMinimumWidth(200)
+        self.artists_list.setMinimumWidth(230)
         self.artists_list.installEventFilter(self)
         self.vinyl_search_bar.setPlaceholderText("🔍\tSearch vinyls")
         self.vinyl_search_bar.setObjectName("SearchBar")
@@ -448,6 +463,7 @@ class VinylLibraryUI(QDialog):
 
 if __name__ == "__main__":
     import sys
+    from PySide6.QtWidgets import QApplication
     app = QApplication([])
     ui = VinylLibraryUI()
     ui.show()

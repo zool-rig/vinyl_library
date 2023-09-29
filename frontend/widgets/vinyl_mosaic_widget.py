@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+# -*- coding: utf-8 -*-
+from PySide6.QtWidgets import QVBoxLayout
+
 from frontend.widgets.abstract_vinyl_widget import AbstractVinylWidget
 
 
@@ -14,3 +14,5 @@ class VinylMosaicWidget(AbstractVinylWidget):
         self.layout.addWidget(self.image_icon)
         self.layout.addWidget(self.name_lbl)
         self.layout.addWidget(self.artist_lbl)
+        self.name_lbl.setWordWrap(True)
+        self.artist_lbl.setWordWrap(True)

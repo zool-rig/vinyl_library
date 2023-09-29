@@ -1,6 +1,15 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+# -*- coding: utf-8 -*-
+from PySide6.QtCore import Signal, QObject, QSize, Qt
+from PySide6.QtGui import QColor, QFont, QPixmap
+from PySide6.QtWidgets import (
+    QWidget,
+    QLabel,
+    QGraphicsDropShadowEffect,
+    QDialog,
+    QVBoxLayout,
+    QMenu,
+)
+
 from frontend.lib.utils import get_image_average_pixel_color, make_icon
 
 
@@ -27,6 +36,7 @@ class AbstractVinylWidget(QWidget):
     def load(self, image):
         self.image_icon = QLabel()
         self.name_lbl = QLabel(self.vinyl.pretty_name)
+        self.name_lbl.setFont(QFont("Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1", 14))
         self.artist_lbl = QLabel(self.vinyl.artist_pretty_name)
         self.load_image(image)
 
@@ -60,6 +70,7 @@ class AbstractVinylWidget(QWidget):
         image_icon = QLabel()
         image_icon.setPixmap(pixmap)
         layout.addWidget(image_icon)
+        dialog.setWindowFlags(Qt.FramelessWindowHint | Qt.Popup)
         dialog.exec()
 
     def show_context_menu(self, pos):
@@ -74,8 +85,6 @@ class AbstractVinylWidget(QWidget):
         deezer_action = menu.addAction("Listen on Deezer")
         deezer_action.setIcon(make_icon("deezer.png"))
         deezer_action.triggered.connect(lambda: self.listen_requested.emit("deezer", self.vinyl))
-        # spotify_action = menu.addAction("Listen on Spotify")
-        # spotify_action.triggered.connect(lambda: self.listen_requested.emit("spotify", self.vinyl))
         youtube_action = menu.addAction("Listen on Youtube")
         youtube_action.setIcon(make_icon("youtube.png"))
         youtube_action.triggered.connect(lambda: self.listen_requested.emit("youtube", self.vinyl))
