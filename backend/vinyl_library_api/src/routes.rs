@@ -31,14 +31,14 @@ pub fn list_all_artists() -> Json<Vec<Artist>> {
 }
 
 #[post("/artists", data = "<name>")]
-pub fn add_artist(name: String) -> Json<Artist> {
+pub fn add_artist(name: Json<String>) -> Json<Artist> {
     let name = name.replace('"', "");
     let mut conn =
         connect().expect("Failed to establish connection with the 'vinyl_library' database");
 
     let existing_id: Option<u32> = conn
         .query_first(format!(
-            "SELECT id FROM vinyl_library.artists WHERE name = '{}';",
+            "SELECT id FROM vinyl_library.artists WHERE name = \"{}\";",
             name
         ))
         .expect("Failed to get existing name");
@@ -193,7 +193,7 @@ pub fn add_vinyl(data: Json<VinylUserData>) -> Json<Vinyl> {
 
     let existing_vinyl = conn
         .query_first(format!(
-            r#"SELECT
+            "SELECT
 				vinyls.id,
 				vinyls.name,
 				vinyls.artist_id,
@@ -202,7 +202,7 @@ pub fn add_vinyl(data: Json<VinylUserData>) -> Json<Vinyl> {
 				vinyls.cover_file_name
 			FROM vinyls
 			LEFT JOIN artists ON vinyls.artist_id = artists.id
-			WHERE vinyls.name = '{}'"#,
+			WHERE vinyls.name = \"{}\";",
             &data.name
         ))
         .map(|row: Option<mysql::Row>| match row {
