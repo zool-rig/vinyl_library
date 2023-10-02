@@ -433,7 +433,7 @@ class VinylLibraryUI(QDialog):
         if not selected_items:
             return
         selected_item = selected_items[0]
-        menu = QMenu()
+        menu = QMenu(self)
         rename_action = menu.addAction("Rename")
         rename_action.setIcon(make_icon("edit.png"))
         rename_action.triggered.connect(lambda: self.rename_artist(selected_item))
