@@ -157,7 +157,12 @@ class VinylLibraryAPI(object):
         if not response.ok:
             response.raise_for_status()
 
-        return Vinyl.from_json(response.json())
+        updated_vinyl = Vinyl.from_json(response.json())
+        for i, vinyl in enumerate(self.vinyls):
+            if vinyl.id == updated_vinyl.id:
+                self.vinyls[i] = updated_vinyl
+                break
+        return updated_vinyl
 
     def delete_vinyl(self, vinyl: Vinyl) -> None:
         url = f"{VinylLibraryAPI.API_URL}/vinyls/delete?id={vinyl.id}"
