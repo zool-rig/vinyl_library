@@ -3,7 +3,7 @@ import re
 import time
 from functools import partial
 
-from PySide6.QtCore import Qt, QEvent, QTimer
+from PySide6.QtCore import Qt, QEvent, QTimer, QKeyCombination
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QDialog,
@@ -194,18 +194,52 @@ class VinylLibraryUI(QDialog):
         self.display_mosaic_btn.setChecked(True)
         self.scroll_area.setWidgetResizable(True)
 
+    @property
+    def user_data(self):
+        geometry = self.geometry()
+        return {
+            "geometry": (geometry.x(), geometry.y(), geometry.width(), geometry.height()),
+            "is_maximized": self.isMaximized(),
+            "artists_toggle_state": self.toggle_artists_btn.isChecked(),
+            "upload_cover_directory": self.api.upload_cover_directory
+        }
+
     def show(self, *args, **kwargs):
         self.init_ui()
         super().show(*args, **kwargs)
         self.run_deferred(self.process_visible_vinyl_widgets)
 
-    def showEvent(self, arg__1):
-        self.resize(855, 595)
+    def apply_user_data(self):
+        user_data = self.api.load_user_data()
+        if not user_data:
+            return False
+
+        if user_data.get("geometry"):
+            self.setGeometry(*user_data["geometry"])
+        if user_data.get("is_maximized"):
+            self.showMaximized()
+        if user_data.get("artists_toggle_state"):
+            self.toggle_artists_btn.setChecked(True)
+
+        return True
+
+    def showEvent(self, event):
+        if not self.apply_user_data():
+            self.resize(855, 595)
+        super().showEvent(event)
+        
+    def closeEvent(self, event):
+        self.api.dump_user_data(self.user_data)
+        super().closeEvent(event)
 
     def eventFilter(self, widget, event):
         if widget == self.artists_list and event.type() == QEvent.ContextMenu:
             self.show_artist_list_context_menu(self.mapToGlobal(event.pos()))
         return super().eventFilter(widget, event)
+
+    def keyPressEvent(self, event):
+        if event.keyCombination() == QKeyCombination(Qt.ControlModifier, Qt.Key_N):
+            self.add_vinyl()
 
     def vinyl_sorter(self, vinyl):
         return {

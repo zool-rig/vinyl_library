@@ -122,7 +122,7 @@ class CoverSelectorDialog(QDialog):
         image_path, _ = QFileDialog.getOpenFileName(
             self,
             "Browse cover image",
-            f"{os.environ['HOMEDRIVE']}{os.environ['HOMEPATH']}",
+            self.parent().api.upload_cover_directory or f"{os.environ['HOMEDRIVE']}{os.environ['HOMEPATH']}",
             "Images (*.png *.jpeg *.jpg)"
         )
         if not image_path:

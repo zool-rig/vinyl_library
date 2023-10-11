@@ -62,7 +62,6 @@ class FlowLayout(QLayout):
         y = rect.y()
         line_height = 0
         spacing = self.spacing()
-
         for item in self._item_list:
             style = item.widget().style()
             layout_spacing_x = style.layoutSpacing(

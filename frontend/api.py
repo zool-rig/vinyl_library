@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import json
 import os.path
 import webbrowser
 from typing import List, Optional, Tuple
@@ -9,15 +10,44 @@ import requests
 from frontend.lib.artist import Artist
 from frontend.lib.vinyl import Vinyl
 from PySide6.QtGui import QImage
+from PySide6.QtWidgets import QApplication
 
 
 class VinylLibraryAPI(object):
     API_URL: str = f"http://{os.environ.get('VINYL_LIBRARY_ADDRESS', '127.0.0.1:8000')}/vinyl_library"
+    USER_DATA_FILE: str = "{LOCALAPPDATA}/vinyl_library/user_data.json".format(**os.environ)
 
     def __init__(self):
         self._artists: Optional[list] = None
         self._vinyls: Optional[list] = None
         self._images = dict()
+        self.upload_cover_directory = None
+
+    def dump_user_data(self, user_data):
+        user_data_dir = os.path.split(self.USER_DATA_FILE)[0]
+        if not os.path.isdir(user_data_dir):
+            os.makedirs(user_data_dir)
+        with open(self.USER_DATA_FILE, "w") as f:
+            json.dump(user_data, f)
+
+    def load_user_data(self):
+        if not os.path.isfile(self.USER_DATA_FILE):
+            return
+        with open(self.USER_DATA_FILE, "r") as f:
+            data = json.load(f)
+        self.upload_cover_directory = data.get("upload_cover_directory")
+        return data
+
+    @staticmethod
+    def copy_to_clipboard(text):
+        clipboard = QApplication.instance().clipboard()
+        clipboard.clear()
+        clipboard.setText(text)
+
+    @staticmethod
+    def search_on_google(query):
+        url = f"https://www.google.com/search?q={query}"
+        webbrowser.open(url)
 
     # [ARTISTS] ========================================================================================================
 
@@ -205,7 +235,8 @@ class VinylLibraryAPI(object):
         return [self.get_image(name) for name in response.json()]
 
     def upload_image(self, image_path: str) -> QImage:
-        image_name = os.path.split(image_path)[-1]
+        image_dir, image_name = os.path.split(image_path)
+        self.upload_cover_directory = image_dir
         url = f"{self.API_URL}/images/upload/{image_name}"
 
         with open(image_path, "rb") as f:
