@@ -70,7 +70,7 @@ class ShuffleVinylsDialog(QDialog):
         self.main_v_layout.setAlignment(Qt.AlignTop)
         self.count_h_layout.setAlignment(Qt.AlignCenter)
         self.scroll_area_v_layout.setAlignment(Qt.AlignTop)
-        self.count_spn.setRange(1, (32 ** 2) - 1)
+        self.count_spn.setRange(1, (32**2) - 1)
         self.count_spn.setValue(self.DEFAULT_COUNT)
         self.scroll_area.setWidgetResizable(True)
 

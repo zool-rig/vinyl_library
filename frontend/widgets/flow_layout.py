@@ -70,7 +70,7 @@ class FlowLayout(QLayout):
             layout_spacing_y = style.layoutSpacing(
                 QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Vertical
             )
-            space_x = spacing + layout_spacing_x
+            space_x = (spacing + layout_spacing_x) if item.widget().isVisible() else 0
             space_y = spacing + layout_spacing_y
             next_x = x + item.sizeHint().width() + space_x
             if next_x - space_x > rect.right() and line_height > 0:
@@ -78,7 +78,6 @@ class FlowLayout(QLayout):
                 y = y + line_height + space_y
                 next_x = x + item.sizeHint().width() + space_x
                 line_height = 0
-
             if not test_only:
                 item.setGeometry(QRect(QPoint(x, y), item.sizeHint()))
 

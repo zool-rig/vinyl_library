@@ -31,8 +31,10 @@ def get_image_average_pixel_color(img: QImage, step=1):
         pixel_color = img.pixelColor(x, y)
         if any(
             (
-                (pixel_color.red(), pixel_color.green(), pixel_color.blue()) == (255, 255, 255),
-                (pixel_color.red(), pixel_color.green(), pixel_color.blue()) == (0, 0, 0),
+                (pixel_color.red(), pixel_color.green(), pixel_color.blue())
+                == (255, 255, 255),
+                (pixel_color.red(), pixel_color.green(), pixel_color.blue())
+                == (0, 0, 0),
             )
         ):
             continue
@@ -47,6 +49,5 @@ def get_image_average_pixel_color(img: QImage, step=1):
     return (
         (sum(color_map[0]) / pixel_count),
         (sum(color_map[1]) / pixel_count),
-        (sum(color_map[2]) / pixel_count)
+        (sum(color_map[2]) / pixel_count),
     )
-

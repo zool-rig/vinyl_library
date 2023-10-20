@@ -14,5 +14,7 @@ class VinylMosaicWidget(AbstractVinylWidget):
         self.layout.addWidget(self.image_icon)
         self.layout.addWidget(self.name_lbl)
         self.layout.addWidget(self.artist_lbl)
+        self.name_lbl.setMaximumWidth(150)
         self.name_lbl.setWordWrap(True)
+        self.artist_lbl.setMaximumWidth(150)
         self.artist_lbl.setWordWrap(True)

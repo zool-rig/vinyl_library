@@ -9,10 +9,7 @@ class Artist:
 
     @classmethod
     def from_json(cls, data):
-        return cls(
-            data["id"],
-            data["name"]
-        )
+        return cls(data["id"], data["name"])
 
     @property
     def pretty_name(self):

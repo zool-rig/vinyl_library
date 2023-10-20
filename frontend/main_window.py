@@ -23,9 +23,15 @@ from PySide6.QtWidgets import (
 )
 
 from frontend.api import VinylLibraryAPI, Artist
-from frontend.dialogs import EditVinylDialog, ShuffleVinylsDialog
+from frontend.dialogs import EditVinylDialog, ShuffleVinylsDialog, FavoriteVinylDialog
 from frontend.lib.utils import make_tool_button, make_icon
-from frontend.widgets import FlowLayout, VSplitter, HSplitter, VinylMosaicWidget, VinylListWidget
+from frontend.widgets import (
+    FlowLayout,
+    VSplitter,
+    HSplitter,
+    VinylMosaicWidget,
+    VinylListWidget,
+)
 
 
 class VinylLibraryUI(QDialog):
@@ -65,6 +71,8 @@ class VinylLibraryUI(QDialog):
         self.add_vinyl_btn = None
         self.toggle_artists_btn = None
         self.shuffle_btn = None
+        self.generate_mosaic_btn = None
+        self.whats_my_favorite_btn = None
         self.artists_splitter = None
         self.artists_lbl = None
         self.artists_list = None
@@ -102,6 +110,12 @@ class VinylLibraryUI(QDialog):
             "artist.png", tooltip="Toggle artists list", checkable=True
         )
         self.shuffle_btn = make_tool_button("shuffle.png", tooltip="Shuffle")
+        self.generate_mosaic_btn = make_tool_button(
+            "generate_mosaic_image.png", tooltip="Generate mosaic image"
+        )
+        self.whats_my_favorite_btn = make_tool_button(
+            "heart.png", tooltip="Determine your favorite vinyl"
+        )
         self.artists_splitter = VSplitter()
         self.artists_lbl = QLabel()
         self.artists_list = QListWidget()
@@ -121,7 +135,10 @@ class VinylLibraryUI(QDialog):
         self.main_h_layout.addLayout(self.toolbar_v_layout)
         self.toolbar_v_layout.addWidget(self.add_vinyl_btn)
         self.toolbar_v_layout.addWidget(self.toggle_artists_btn)
+        self.toolbar_v_layout.addWidget(HSplitter())
         self.toolbar_v_layout.addWidget(self.shuffle_btn)
+        self.toolbar_v_layout.addWidget(self.generate_mosaic_btn)
+        self.toolbar_v_layout.addWidget(self.whats_my_favorite_btn)
         self.main_h_layout.addWidget(self.artists_splitter)
         self.main_h_layout.addLayout(self.artists_v_layout)
         self.artists_v_layout.addWidget(self.artists_lbl)
@@ -148,6 +165,7 @@ class VinylLibraryUI(QDialog):
         self.toggle_artists_btn.toggled.connect(self.toggle_artists_widgets)
         self.artists_list.itemSelectionChanged.connect(self.set_artist_filter)
         self.shuffle_btn.clicked.connect(self.shuffle_vinyls)
+        self.whats_my_favorite_btn.clicked.connect(self.define_favorite_vinyl)
         self.vinyl_search_bar.textChanged.connect(self.set_vinyl_filter)
         self.sorting_cbx.currentIndexChanged.connect(self.set_sorting_mode)
         self.display_mosaic_btn.clicked.connect(
@@ -166,7 +184,11 @@ class VinylLibraryUI(QDialog):
 
     def set_default(self):
         self.setWindowTitle("Vinyl Library")
-        self.setWindowFlags(self.windowFlags() | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
+        self.setWindowFlags(
+            self.windowFlags()
+            | Qt.WindowMinimizeButtonHint
+            | Qt.WindowMaximizeButtonHint
+        )
         for layout, alignment in (
             (self.toolbar_v_layout, Qt.AlignTop),
             (self.artists_v_layout, Qt.AlignTop),
@@ -183,6 +205,12 @@ class VinylLibraryUI(QDialog):
         self.artists_list.setSelectionMode(QListWidget.ExtendedSelection)
         self.artists_list.setMinimumWidth(230)
         self.artists_list.installEventFilter(self)
+        for button in (
+            self.shuffle_btn,
+            self.generate_mosaic_btn,
+            self.whats_my_favorite_btn,
+        ):
+            button.setEnabled(bool(self.api.vinyls))
         self.vinyl_search_bar.setPlaceholderText("🔍\tSearch vinyls")
         self.vinyl_search_bar.setObjectName("SearchBar")
         self.vinyl_search_bar.setMinimumWidth(350)
@@ -198,10 +226,16 @@ class VinylLibraryUI(QDialog):
     def user_data(self):
         geometry = self.geometry()
         return {
-            "geometry": (geometry.x(), geometry.y(), geometry.width(), geometry.height()),
+            "geometry": (
+                geometry.x(),
+                geometry.y(),
+                geometry.width(),
+                geometry.height(),
+            ),
             "is_maximized": self.isMaximized(),
             "artists_toggle_state": self.toggle_artists_btn.isChecked(),
-            "upload_cover_directory": self.api.upload_cover_directory
+            "upload_cover_directory": self.api.upload_cover_directory,
+            "favorite_vinyl": self.api.favorite_vinyl,
         }
 
     def show(self, *args, **kwargs):
@@ -220,6 +254,8 @@ class VinylLibraryUI(QDialog):
             self.showMaximized()
         if user_data.get("artists_toggle_state"):
             self.toggle_artists_btn.setChecked(True)
+        if user_data.get("favorite_vinyl"):
+            self.api.favorite_vinyl = user_data["favorite_vinyl"]
 
         return True
 
@@ -227,7 +263,7 @@ class VinylLibraryUI(QDialog):
         if not self.apply_user_data():
             self.resize(855, 595)
         super().showEvent(event)
-        
+
     def closeEvent(self, event):
         self.api.dump_user_data(self.user_data)
         super().closeEvent(event)
@@ -296,7 +332,7 @@ class VinylLibraryUI(QDialog):
 
     def fill_artists(self):
         self.artists_list.clear()
-        for artist in self.api.artists:
+        for artist in sorted(self.api.artists, key=lambda a: a.name):
             self.add_artist_item_to_list(artist)
 
     def filter_vinyls(self):
@@ -360,8 +396,8 @@ class VinylLibraryUI(QDialog):
         self.vinyl_count_lbl.setText(f"{len(self.api.vinyls)} Vinyls")
 
     @staticmethod
-    def run_deferred(func, delay=0, *args, **kwargs):
-        QTimer.singleShot(delay, lambda: func(*args, **kwargs))
+    def run_deferred(func, delay=0):
+        QTimer.singleShot(delay, func)
 
     def process_visible_vinyl_widgets(self):
         viewport_geo = self.scroll_area.viewport().geometry()
@@ -473,7 +509,9 @@ class VinylLibraryUI(QDialog):
         rename_action.triggered.connect(lambda: self.rename_artist(selected_item))
         delete_action = menu.addAction("Delete")
         delete_action.setIcon(make_icon("delete.png"))
-        delete_action.triggered.connect(lambda: self.delete_artist_with_prompt(selected_item.artist))
+        delete_action.triggered.connect(
+            lambda: self.delete_artist_with_prompt(selected_item.artist)
+        )
         menu.exec(pos)
 
     def rename_artist(self, item):
@@ -485,7 +523,9 @@ class VinylLibraryUI(QDialog):
         item.artist = self.api.update_artist(item.artist, new_name)
         item.setText(item.artist.pretty_name)
 
-        related_vinyls_ids = {vinyl.id for vinyl in self.api.get_vinyls_for_artist(item.artist)}
+        related_vinyls_ids = {
+            vinyl.id for vinyl in self.api.get_vinyls_for_artist(item.artist)
+        }
         for widget in self.vinyl_widgets:
             if widget.vinyl.id in related_vinyls_ids:
                 widget.vinyl.artist_name = item.artist.name
@@ -494,10 +534,15 @@ class VinylLibraryUI(QDialog):
     def shuffle_vinyls(self):
         ShuffleVinylsDialog(self).exec()
 
+    def define_favorite_vinyl(self):
+        dialog = FavoriteVinylDialog(self)
+        dialog.exec()
+
 
 if __name__ == "__main__":
     import sys
     from PySide6.QtWidgets import QApplication
+
     app = QApplication([])
     ui = VinylLibraryUI()
     ui.show()

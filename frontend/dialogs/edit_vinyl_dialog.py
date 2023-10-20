@@ -9,16 +9,18 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QPushButton,
-    QCompleter
+    QCompleter,
 )
 
 from frontend.dialogs.select_cover_file_dialog import CoverSelectorDialog
-from frontend.widgets import HSplitter
+from frontend.widgets import HSplitter, CoverButton
 from frontend.lib.utils import make_tool_button
 
 
 class EditVinylDialog(QDialog):
-    def __init__(self, parent, api, cover_file_name="no_image.jpg", vinyl_name="", artist_name=""):
+    def __init__(
+        self, parent, api, cover_file_name="no_image.jpg", vinyl_name="", artist_name=""
+    ):
         super().__init__(parent=parent)
         self.api = api
         self.ok = False
@@ -52,7 +54,7 @@ class EditVinylDialog(QDialog):
         self.set_layouts()
         self.set_connections()
         self.set_default()
-        
+
     def init_layouts(self):
         self.main_v_layout = QVBoxLayout(self)
         self.main_h_layout = QHBoxLayout()
@@ -63,16 +65,20 @@ class EditVinylDialog(QDialog):
         self.action_h_layout = QHBoxLayout()
 
     def init_widgets(self):
-        self.image_btn = QToolButton()
+        self.image_btn = CoverButton(size=QSize(150, 150))
         self.vinyl_lbl = QLabel("Vinyl name : ")
         self.vinyl_edt = QLineEdit()
         self.artist_lbl = QLabel("Artist name :")
         self.artist_edt = QLineEdit()
-        self.copy_btn = make_tool_button("clipboard.png", "Copy the vinyl's and artist's name to clipboard")
-        self.google_btn = make_tool_button("google.png", "search the vinyl's and artist's name on google")
+        self.copy_btn = make_tool_button(
+            "clipboard.png", "Copy the vinyl's and artist's name to clipboard"
+        )
+        self.google_btn = make_tool_button(
+            "google.png", "search the vinyl's and artist's name on google"
+        )
         self.ok_btn = QPushButton("OK")
         self.cancel_btn = QPushButton("Cancel")
-        
+
     def set_layouts(self):
         self.main_v_layout.addLayout(self.main_h_layout)
         self.main_h_layout.addWidget(self.image_btn)
@@ -95,11 +101,15 @@ class EditVinylDialog(QDialog):
         self.image_btn.clicked.connect(self.browse_cover)
         self.vinyl_edt.textChanged.connect(self.check)
         self.artist_edt.textChanged.connect(self.check)
-        self.copy_btn.clicked.connect(lambda: self.api.copy_to_clipboard(f"{self.vinyl_name} {self.artist_name}"))
-        self.google_btn.clicked.connect(lambda: self.api.search_on_google(f"{self.vinyl_name} {self.artist_name}"))
+        self.copy_btn.clicked.connect(
+            lambda: self.api.copy_to_clipboard(f"{self.vinyl_name} {self.artist_name}")
+        )
+        self.google_btn.clicked.connect(
+            lambda: self.api.search_on_google(f"{self.vinyl_name} {self.artist_name}")
+        )
         self.ok_btn.clicked.connect(lambda: (setattr(self, "ok", True), self.close()))
         self.cancel_btn.clicked.connect(self.close)
-        
+
     def set_default(self):
         self.setWindowTitle("Edit vinyl")
         for layout, alignment in (
@@ -111,9 +121,6 @@ class EditVinylDialog(QDialog):
             (self.name_action_h_layout, Qt.AlignRight),
         ):
             layout.setAlignment(alignment)
-        self.image_btn.setMinimumSize(150, 150)
-        self.image_btn.setIconSize(QSize(150, 150))
-        self.image_btn.setObjectName("CoverButton")
         self.cover_file_name = self._cover_file_name
         self.vinyl_name = self._vinyl_name
         self.artist_name = self._artist_name
@@ -122,7 +129,7 @@ class EditVinylDialog(QDialog):
         self.artist_edt.setCompleter(completer)
         self.check()
         self.vinyl_edt.setFocus()
-    
+
     def exec(self):
         self.init_ui()
         super().exec()
@@ -135,13 +142,13 @@ class EditVinylDialog(QDialog):
     @cover_file_name.setter
     def cover_file_name(self, value):
         self._cover_file_name = value
-        self.image_btn.setIcon(QPixmap.fromImage(self.api.get_image(value)))
+        self.image_btn.image = self.api.get_image(value)
 
     def browse_cover(self):
         ok, image = CoverSelectorDialog.select_cover(self)
         if ok:
             self._cover_file_name = image.name
-            self.image_btn.setIcon(QPixmap.fromImage(image))
+            self.image_btn.image = image
 
     @property
     def vinyl_name(self):
@@ -164,7 +171,7 @@ class EditVinylDialog(QDialog):
         return {
             "cover_file_name": self.cover_file_name,
             "vinyl_name": self.vinyl_name,
-            "artist_name": self.artist_name
+            "artist_name": self.artist_name,
         }
 
     def check(self, *_):

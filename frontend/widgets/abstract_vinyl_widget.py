@@ -42,7 +42,9 @@ class AbstractVinylWidget(QWidget):
 
     def load_image(self, image):
         pixmap = QPixmap(image)
-        pixmap = pixmap.scaled(QSize(*self.IMAGE_SIZE), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap.scaled(
+            QSize(*self.IMAGE_SIZE), Qt.KeepAspectRatio, Qt.SmoothTransformation
+        )
         self.image_icon.setPixmap(pixmap)
         self.is_loaded = True
         self.image_average_color = QColor(*get_image_average_pixel_color(image))
@@ -63,10 +65,14 @@ class AbstractVinylWidget(QWidget):
 
     def show_cover(self):
         dialog = QDialog(self.parent())
-        dialog.setWindowTitle(f"{self.vinyl.pretty_name} - {self.vinyl.artist_pretty_name}")
+        dialog.setWindowTitle(
+            f"{self.vinyl.pretty_name} - {self.vinyl.artist_pretty_name}"
+        )
         layout = QVBoxLayout(dialog)
         pixmap = QPixmap(self.image)
-        pixmap = pixmap.scaled(QSize(*self.LARGE_IMAGE_SIZE), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap.scaled(
+            QSize(*self.LARGE_IMAGE_SIZE), Qt.KeepAspectRatio, Qt.SmoothTransformation
+        )
         image_icon = QLabel()
         image_icon.setPixmap(pixmap)
         layout.addWidget(image_icon)
@@ -84,10 +90,14 @@ class AbstractVinylWidget(QWidget):
         menu.addSeparator()
         deezer_action = menu.addAction("Listen on Deezer")
         deezer_action.setIcon(make_icon("deezer.png"))
-        deezer_action.triggered.connect(lambda: self.listen_requested.emit("deezer", self.vinyl))
+        deezer_action.triggered.connect(
+            lambda: self.listen_requested.emit("deezer", self.vinyl)
+        )
         youtube_action = menu.addAction("Listen on Youtube")
         youtube_action.setIcon(make_icon("youtube.png"))
-        youtube_action.triggered.connect(lambda: self.listen_requested.emit("youtube", self.vinyl))
+        youtube_action.triggered.connect(
+            lambda: self.listen_requested.emit("youtube", self.vinyl)
+        )
         menu.exec(pos)
 
     def mouseReleaseEvent(self, event):

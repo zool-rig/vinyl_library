@@ -13,11 +13,10 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QWidget,
     QToolButton,
-    QFileDialog
+    QFileDialog,
 )
 
-from frontend.widgets import FlowLayout
-from frontend.widgets import HSplitter
+from frontend.widgets import FlowLayout, HSplitter, CoverButton
 
 
 class CoverSelectorDialog(QDialog):
@@ -32,12 +31,12 @@ class CoverSelectorDialog(QDialog):
         self.image_buttons = list()
         self.selected_image = None
         self.ok = False
-        
+
         # Layouts
         self.v_layout = None
         self.flow_layout = None
         self.actions_h_layout = None
-        
+
         # Widgets
         self.upload_btn = None
         self.existing_images_lbl = None
@@ -66,7 +65,7 @@ class CoverSelectorDialog(QDialog):
         self.scroll_area_widget = QWidget()
         self.apply_selected_btn = QPushButton("Apply selected image")
         self.cancel_btn = QPushButton("Cancel")
-    
+
     def set_layouts(self):
         self.v_layout.addWidget(self.upload_btn)
         self.v_layout.addWidget(HSplitter())
@@ -108,22 +107,18 @@ class CoverSelectorDialog(QDialog):
 
     def fill_existing_images(self):
         for image in self.images:
-            button = QToolButton()
-            button.setIcon(QIcon(QPixmap.fromImage(image)))
-            button.setIconSize(QSize(100, 100))
-            button.setCheckable(True)
+            button = CoverButton(image=image, size=QSize(100, 100), checkable=True)
             button.clicked.connect(partial(self.existing_image_selected, button))
-            setattr(button, "image", image)
             self.flow_layout.addWidget(button)
             self.image_buttons.append(button)
-            button.setObjectName("CoverButton")
 
     def upload(self):
         image_path, _ = QFileDialog.getOpenFileName(
             self,
             "Browse cover image",
-            self.parent().api.upload_cover_directory or f"{os.environ['HOMEDRIVE']}{os.environ['HOMEPATH']}",
-            "Images (*.png *.jpeg *.jpg)"
+            self.parent().api.upload_cover_directory
+            or f"{os.environ['HOMEDRIVE']}{os.environ['HOMEPATH']}",
+            "Images (*.png *.jpeg *.jpg)",
         )
         if not image_path:
             return

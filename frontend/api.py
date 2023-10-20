@@ -15,13 +15,16 @@ from PySide6.QtWidgets import QApplication
 
 class VinylLibraryAPI(object):
     API_URL: str = f"http://{os.environ.get('VINYL_LIBRARY_ADDRESS', '127.0.0.1:8000')}/vinyl_library"
-    USER_DATA_FILE: str = "{LOCALAPPDATA}/vinyl_library/user_data.json".format(**os.environ)
+    USER_DATA_FILE: str = "{LOCALAPPDATA}/vinyl_library/user_data.json".format(
+        **os.environ
+    )
 
     def __init__(self):
         self._artists: Optional[list] = None
         self._vinyls: Optional[list] = None
         self._images = dict()
         self.upload_cover_directory = None
+        self.favorite_vinyl = None
 
     def dump_user_data(self, user_data):
         user_data_dir = os.path.split(self.USER_DATA_FILE)[0]

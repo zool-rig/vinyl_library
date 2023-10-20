@@ -29,3 +29,6 @@ class Vinyl:
     @property
     def artist_pretty_name(self):
         return " ".join(self.artist_name.split("_")).title()
+
+    def as_dict(self):
+        return self.__dict__

@@ -8,9 +8,6 @@ class VinylListWidget(AbstractVinylWidget):
     IMAGE_SIZE = (50, 50)
     MINIMUM_SIZE = (50, 80)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def load(self, image):
         super().load(image)
         self.layout = QHBoxLayout(self)
