@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from frontend.api import VinylLibraryAPI, Artist
-from frontend.dialogs import EditVinylDialog, ShuffleVinylsDialog, FavoriteVinylDialog
+from frontend.dialogs import EditVinylDialog, ShuffleVinylsDialog, FavoriteVinylDialog, GenerateMosaicDialog
 from frontend.lib.utils import make_tool_button, make_icon
 from frontend.widgets import (
     FlowLayout,
@@ -114,7 +114,7 @@ class VinylLibraryUI(QDialog):
             "generate_mosaic_image.png", tooltip="Generate mosaic image"
         )
         self.whats_my_favorite_btn = make_tool_button(
-            "heart.png", tooltip="Determine your favorite vinyl"
+            "heart.png", tooltip="Define your favorite vinyl"
         )
         self.artists_splitter = VSplitter()
         self.artists_lbl = QLabel()
@@ -165,6 +165,7 @@ class VinylLibraryUI(QDialog):
         self.toggle_artists_btn.toggled.connect(self.toggle_artists_widgets)
         self.artists_list.itemSelectionChanged.connect(self.set_artist_filter)
         self.shuffle_btn.clicked.connect(self.shuffle_vinyls)
+        self.generate_mosaic_btn.clicked.connect(self.generate_mosaic_image)
         self.whats_my_favorite_btn.clicked.connect(self.define_favorite_vinyl)
         self.vinyl_search_bar.textChanged.connect(self.set_vinyl_filter)
         self.sorting_cbx.currentIndexChanged.connect(self.set_sorting_mode)
@@ -189,6 +190,8 @@ class VinylLibraryUI(QDialog):
             | Qt.WindowMinimizeButtonHint
             | Qt.WindowMaximizeButtonHint
         )
+        from PySide6.QtGui import QIcon
+        self.setWindowIcon(make_icon("vinyl_library.png"))
         for layout, alignment in (
             (self.toolbar_v_layout, Qt.AlignTop),
             (self.artists_v_layout, Qt.AlignTop),
@@ -536,6 +539,10 @@ class VinylLibraryUI(QDialog):
 
     def define_favorite_vinyl(self):
         dialog = FavoriteVinylDialog(self)
+        dialog.exec()
+
+    def generate_mosaic_image(self):
+        dialog = GenerateMosaicDialog(self)
         dialog.exec()
 
 
