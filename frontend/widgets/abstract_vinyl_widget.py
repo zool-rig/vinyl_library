@@ -8,12 +8,13 @@ from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QMenu,
+    QFrame
 )
 
 from frontend.lib.utils import get_image_average_pixel_color, make_icon
 
 
-class AbstractVinylWidget(QWidget):
+class AbstractVinylWidget(QFrame):
     IMAGE_SIZE = (0, 0)
     MINIMUM_SIZE = (0, 0)
     LARGE_IMAGE_SIZE = (500, 500)
@@ -32,6 +33,7 @@ class AbstractVinylWidget(QWidget):
         self.image_average_color = QColor()
         self.image = None
         self.setMinimumSize(*self.MINIMUM_SIZE)
+        self.setStyleSheet("background-color: #2d3033; border-radius: 8px")
 
     def load(self, image):
         self.image_icon = QLabel()
@@ -39,6 +41,7 @@ class AbstractVinylWidget(QWidget):
         self.name_lbl.setFont(QFont("Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1", 14))
         self.artist_lbl = QLabel(self.vinyl.artist_pretty_name)
         self.load_image(image)
+        self.setStyleSheet("")
 
     def load_image(self, image):
         pixmap = QPixmap(image)

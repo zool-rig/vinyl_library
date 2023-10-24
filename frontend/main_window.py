@@ -289,8 +289,8 @@ class VinylLibraryUI(QDialog):
     def vinyl_sorter(self, vinyl):
         return {
             self.SortingModes.DATE: time.time() - vinyl.added_date,
-            self.SortingModes.ARTISTS: vinyl.artist_name,
-            self.SortingModes.VINYLS: vinyl.name,
+            self.SortingModes.ARTISTS: vinyl.artist_name.lower(),
+            self.SortingModes.VINYLS: vinyl.name.lower(),
         }.get(self.current_sorting_mode)
 
     def fill_vinyls(self):

@@ -26,7 +26,7 @@ pub fn list_all_artists() -> Json<Vec<Artist>> {
             id: row.take("id").unwrap(),
             name: row.take("name").unwrap(),
         })
-        .expect("Faild to query all artists"),
+        .expect("Failed to query all artists"),
     );
 }
 
