@@ -1,8 +1,8 @@
-from random import choice
-
-from typing import List, Optional
-from frontend.lib.vinyl import Vinyl
 from copy import copy
+from random import choice
+from typing import List, Optional
+
+from frontend.lib.vinyl import Vinyl
 
 
 class FavoriteVinylGenerator(object):

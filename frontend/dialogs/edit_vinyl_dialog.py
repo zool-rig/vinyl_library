@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QHBoxLayout,
-    QToolButton,
     QLabel,
     QLineEdit,
     QPushButton,
@@ -13,8 +11,8 @@ from PySide6.QtWidgets import (
 )
 
 from frontend.dialogs.select_cover_file_dialog import CoverSelectorDialog
-from frontend.widgets import HSplitter, CoverButton
 from frontend.lib.utils import make_tool_button
+from frontend.widgets import HSplitter, CoverButton
 
 
 class EditVinylDialog(QDialog):

@@ -23,7 +23,12 @@ from PySide6.QtWidgets import (
 )
 
 from frontend.api import VinylLibraryAPI, Artist
-from frontend.dialogs import EditVinylDialog, ShuffleVinylsDialog, FavoriteVinylDialog, GenerateMosaicDialog
+from frontend.dialogs import (
+    EditVinylDialog,
+    ShuffleVinylsDialog,
+    FavoriteVinylDialog,
+    GenerateMosaicDialog,
+)
 from frontend.lib.utils import make_tool_button, make_icon
 from frontend.widgets import (
     FlowLayout,
@@ -191,6 +196,7 @@ class VinylLibraryUI(QDialog):
             | Qt.WindowMaximizeButtonHint
         )
         from PySide6.QtGui import QIcon
+
         self.setWindowIcon(make_icon("vinyl_library.png"))
         for layout, alignment in (
             (self.toolbar_v_layout, Qt.AlignTop),

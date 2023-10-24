@@ -1,11 +1,22 @@
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+import os
+
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QSpinBox,
+    QComboBox,
+    QPushButton,
+    QLineEdit,
+    QFileDialog,
+)
+
+from frontend.lib.mosaic_image_generator import MosaicImageGenerator
+from frontend.lib.utils import make_tool_button
 from frontend.widgets.size_spinbox import SizeSpinbox
 from frontend.widgets.splitters import HSplitter, VSplitter
-from frontend.lib.utils import make_tool_button
-from frontend.lib.mosaic_image_generator import MosaicImageGenerator
-import os
 
 
 class GenerateMosaicDialog(QDialog):
@@ -19,7 +30,10 @@ class GenerateMosaicDialog(QDialog):
             (500, 500),
             None,
             MosaicImageGenerator.CoverSizeModes.AUTO,
-            [self.parent().api.get_image(v.cover_file_name) for v in self.parent().api.vinyls]
+            [
+                self.parent().api.get_image(v.cover_file_name)
+                for v in self.parent().api.vinyls
+            ],
         )
         self.generated_pixmap = None
 
@@ -70,7 +84,9 @@ class GenerateMosaicDialog(QDialog):
         self.generate_btn = QPushButton("Generate")
         self.preview_image = QLabel()
         self.output_path_edt = QLineEdit()
-        self.browse_output_path_btn = make_tool_button("folder.png", tooltip="Browse path")
+        self.browse_output_path_btn = make_tool_button(
+            "folder.png", tooltip="Browse path"
+        )
         self.save_btn = QPushButton("Save")
 
     def set_layouts(self):
@@ -99,7 +115,10 @@ class GenerateMosaicDialog(QDialog):
     def set_connections(self):
         self.cover_count_spn.valueChanged.connect(self.cover_count_changed)
         self.image_size_spn.size_changed.connect(
-            lambda w, h: (self.generator.set_image_size((w, h)), self.resize_preview_image())
+            lambda w, h: (
+                self.generator.set_image_size((w, h)),
+                self.resize_preview_image(),
+            )
         )
         self.cover_size_cbx.currentIndexChanged.connect(self.cover_size_mode_changed)
         self.custom_cover_size_spn.valueChanged.connect(self.cover_size_changed)
@@ -136,15 +155,22 @@ class GenerateMosaicDialog(QDialog):
 
     def set_cover_size_mode(self, mode):
         self.generator.set_cover_size_mode(mode)
-        self.custom_cover_size_spn.setVisible(mode == MosaicImageGenerator.CoverSizeModes.CUSTOM)
+        self.custom_cover_size_spn.setVisible(
+            mode == MosaicImageGenerator.CoverSizeModes.CUSTOM
+        )
         self.generator.set_cover_size(
-            self.custom_cover_size_spn.value(
-            ) if self.generator.cover_size_mode == MosaicImageGenerator.CoverSizeModes.CUSTOM else None
+            self.custom_cover_size_spn.value()
+            if self.generator.cover_size_mode
+            == MosaicImageGenerator.CoverSizeModes.CUSTOM
+            else None
         )
 
     def set_cover_size(self, value):
         self.generator.set_cover_size(
-            value if self.generator.cover_size_mode == MosaicImageGenerator.CoverSizeModes.CUSTOM else None
+            value
+            if self.generator.cover_size_mode
+            == MosaicImageGenerator.CoverSizeModes.CUSTOM
+            else None
         )
 
     @property
@@ -152,8 +178,12 @@ class GenerateMosaicDialog(QDialog):
         reel_width = self.image_size_spn.output_width
         reel_height = self.image_size_spn.output_height
         return (
-            reel_width if reel_width <= self.PREVIEW_MAXIMUM_WIDTH else self.PREVIEW_MAXIMUM_WIDTH,
-            reel_height if reel_height <= self.PREVIEW_MAXIMUM_HEIGHT else self.PREVIEW_MAXIMUM_HEIGHT
+            reel_width
+            if reel_width <= self.PREVIEW_MAXIMUM_WIDTH
+            else self.PREVIEW_MAXIMUM_WIDTH,
+            reel_height
+            if reel_height <= self.PREVIEW_MAXIMUM_HEIGHT
+            else self.PREVIEW_MAXIMUM_HEIGHT,
         )
 
     def resize_preview_image(self):
@@ -178,18 +208,13 @@ class GenerateMosaicDialog(QDialog):
 
     def draw_preview(self):
         preview_pixmap = self.generated_pixmap.scaled(
-            QSize(*self.preview_image_size),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
+            QSize(*self.preview_image_size), Qt.KeepAspectRatio, Qt.SmoothTransformation
         )
         self.preview_image.setPixmap(preview_pixmap)
 
     def browse_output_path(self):
         output_path, _ = QFileDialog.getSaveFileName(
-            self.parent(),
-            "Output path",
-            f"{os.environ['USERPROFILE']}",
-            "*.png"
+            self.parent(), "Output path", f"{os.environ['USERPROFILE']}", "*.png"
         )
         if not output_path:
             self.output_path_edt.clear()
@@ -205,4 +230,3 @@ class GenerateMosaicDialog(QDialog):
         if not output_path:
             raise ValueError("No output path provided")
         self.generator.save(self.generated_pixmap, output_path)
-

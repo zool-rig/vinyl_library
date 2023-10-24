@@ -1,8 +1,11 @@
 from typing import Tuple
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
+    QWidget,
+    QHBoxLayout,
+    QSpinBox,
+)
 
 
 class SizeSpinbox(QWidget):
@@ -17,8 +20,12 @@ class SizeSpinbox(QWidget):
         self._layout.addWidget(self._width_spn)
         self._layout.addWidget(self._height_spn)
 
-        self._width_spn.valueChanged.connect(lambda w: self.size_changed.emit(w, self._height_spn.value()))
-        self._height_spn.valueChanged.connect(lambda h: self.size_changed.emit(self._width_spn.value(), h))
+        self._width_spn.valueChanged.connect(
+            lambda w: self.size_changed.emit(w, self._height_spn.value())
+        )
+        self._height_spn.valueChanged.connect(
+            lambda h: self.size_changed.emit(self._width_spn.value(), h)
+        )
 
     def get_output_width(self) -> int:
         return self._width_spn.value()
@@ -75,7 +82,7 @@ class SizeSpinbox(QWidget):
     @width_range.setter
     def width_range(self, value: Tuple[int, int]) -> None:
         self.set_width_range(*value)
-        
+
     def get_height_range(self) -> Tuple[int, int]:
         return self._height_spn.minimum(), self._height_spn.maximum()
 
@@ -107,4 +114,3 @@ class SizeSpinbox(QWidget):
         min_w, max_w = w_range
         min_h, max_h = h_range
         self.set_ranges(min_w, max_w, min_h, max_h)
-    

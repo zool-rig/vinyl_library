@@ -3,7 +3,6 @@ import os
 from functools import partial
 
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -12,7 +11,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QScrollArea,
     QWidget,
-    QToolButton,
     QFileDialog,
 )
 

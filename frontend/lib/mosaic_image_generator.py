@@ -1,10 +1,10 @@
-from typing import Tuple, Optional, List
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
-from random import choice
-from copy import copy
 import os
+from copy import copy
+from random import choice
+from typing import Tuple, Optional, List
+
+from PySide6.QtCore import QRect, Qt, QPoint
+from PySide6.QtGui import QImage, QPixmap, QPainter
 
 
 class MosaicImageGenerator(object):
@@ -18,7 +18,7 @@ class MosaicImageGenerator(object):
         image_size: Tuple[int, int],
         cover_size: Optional[int],
         cover_size_mode: int,
-        cover_images: List[QImage]
+        cover_images: List[QImage],
     ):
         super().__init__()
         self.cover_count = cover_count
@@ -41,7 +41,11 @@ class MosaicImageGenerator(object):
 
     @property
     def cover_size(self) -> int:
-        return self._cover_size if self.cover_size_mode == self.CoverSizeModes.CUSTOM else self.calculate_cover_size()
+        return (
+            self._cover_size
+            if self.cover_size_mode == self.CoverSizeModes.CUSTOM
+            else self.calculate_cover_size()
+        )
 
     @cover_size.setter
     def cover_size(self, value: Optional[int]):
@@ -70,8 +74,7 @@ class MosaicImageGenerator(object):
             cover = choice(cover_images)
             cover_images.remove(cover)
             cover_pixmap = QPixmap(cover).scaledToWidth(
-                self.cover_size or 50,
-                Qt.SmoothTransformation
+                self.cover_size or 50, Qt.SmoothTransformation
             )
             painter.drawPixmap(QPoint(pos_x, pos_y), cover_pixmap)
             pos_x += cover_size
